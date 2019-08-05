@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ -d "/web/grav/user" ];
+then
+  if [ -z "$(ls -A "/web/grav/user")" ];
+  then
+    cp -a /web/grav/user_dist/* /web/grav/user/
+  fi
+fi

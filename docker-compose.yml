@@ -1,0 +1,58 @@
+---
+version: "2"
+
+services:
+
+  backend-web:
+    image: nginx:latest
+    volumes:
+      - grav-webroot:/web:ro
+      - ${PWD}/grav/backup:/web/grav/backup:ro
+      - ${PWD}/grav/data:/web/grav/user:ro
+      - ${PWD}/grav/conf/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - backend
+    ports:
+      - 8080:80
+    depends_on:
+      - backend-php
+
+  backend-php:
+    image: akisys/grav.cms:1.6.11
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+         GRAV_VERSION: 1.6.11
+         GRAV_SHA1: 5bad00e7884dd1792820e192433bfd1a17b1ec27
+         WEBROOT: /web
+         WEBROOT_GRAV: /web/grav
+         WEBROOT_GRAV_USER: /web/grav/user
+    volumes:
+      - grav-webroot:/web
+      - ${PWD}/grav/backup:/web/grav/backup
+      - ${PWD}/grav/data:/web/grav/user
+      - ${PWD}/grav/logs:/web/grav/logs
+    networks:
+      - backend
+      - caching
+    depends_on:
+      - backend-cache
+
+  backend-cache:
+    image: memcached:alpine
+    networks:
+      - caching
+    command:
+      - memcached
+      - -m 64
+
+networks:
+  backend:
+    external: false
+  caching:
+    external: false
+
+volumes:
+  grav-webroot:
+    external: false

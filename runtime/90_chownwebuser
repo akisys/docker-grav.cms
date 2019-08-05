@@ -1,0 +1,12 @@
+#!/bin/sh
+
+_grav_dirs="\
+backup
+logs
+"
+
+for _dir in ${_grav_dirs}; do
+  #if [ -z "$(ls -A "/web/grav/${_dir}")" ]; then
+  chown -Rv www-data:www-data "/web/grav/${_dir}"
+  #fi
+done

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ ! -f "/web/grav/user/config/scheduler.yaml" ];
+then
+  cd /web/grav
+  su -s /bin/sh www-data -c "touch /web/grav/user/config/scheduler.yaml"
+  su -s /bin/sh www-data -c "php bin/grav scheduler -i"
+  su -s /bin/sh www-data -c "php bin/grav scheduler -d"
+fi
+
+echo '* * * * * su -s /bin/sh www-data -c "(cd /web/grav;/usr/local/bin/php bin/grav scheduler 1>> /dev/null 2>&1)"' | crontab -
+exec crond -b -l 2 -L /web/grav/logs/system_cron.log
