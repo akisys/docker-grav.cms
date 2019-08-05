@@ -3,6 +3,7 @@
 _grav_dirs="\
 backup
 logs
+user
 "
 
 for _dir in ${_grav_dirs}; do
